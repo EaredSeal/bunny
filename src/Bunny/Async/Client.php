@@ -47,7 +47,7 @@ class Client extends AbstractClient
     /** @var LoopInterface */
     protected $eventLoop;
 
-    /** @var Promise\PromiseInterface */
+    /** @var Promise\PromiseInterface|null */
     protected $flushWriteBufferPromise;
 
     /** @var callable[] */
@@ -123,7 +123,7 @@ class Client extends AbstractClient
     public function stop()
     {
         if ($this->stopTimer) {
-            $this->stopTimer->cancel();
+            $this->eventLoop->cancelTimer($this->stopTimer);
             $this->stopTimer = null;
         }
 
@@ -271,7 +271,7 @@ class Client extends AbstractClient
         }
 
         if ($this->heartbeatTimer) {
-            $this->heartbeatTimer->cancel();
+            $this->eventLoop->cancelTimer($this->heartbeatTimer);
             $this->heartbeatTimer = null;
         }
 

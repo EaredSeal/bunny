@@ -1,10 +1,13 @@
 <?php
 namespace Bunny;
 
+use Bunny\Exception\ChannelException;
+use Bunny\Exception\ClientException;
 use Bunny\Protocol\MethodBasicAckFrame;
 use Bunny\Protocol\MethodBasicReturnFrame;
+use PHPUnit\Framework\TestCase;
 
-class ClientTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
 
     public function testConnectAsGuest()
@@ -12,6 +15,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client = new Client();
         $client->connect();
         $client->disconnect();
+
+        $this->assertTrue(true);
     }
 
     public function testConnectAuth()
@@ -23,11 +28,13 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         ]);
         $client->connect();
         $client->disconnect();
+
+        $this->assertTrue(true);
     }
 
     public function testConnectFailure()
     {
-        $this->setExpectedException("Bunny\\Exception\\ClientException");
+        $this->expectException(ClientException::class);
 
         $client = new Client([
             "user" => "testuser",
@@ -41,7 +48,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testOpenChannel()
     {
         $client = new Client();
-        $this->assertInstanceOf("Bunny\\Channel", $client->connect()->channel());
+        $this->assertInstanceOf(Channel::class, $client->connect()->channel());
         $client->disconnect();
     }
 
@@ -49,10 +56,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $client = new Client();
         $client->connect();
-        $this->assertInstanceOf("Bunny\\Channel", $ch1 = $client->channel());
-        $this->assertInstanceOf("Bunny\\Channel", $ch2 = $client->channel());
+        $this->assertInstanceOf(Channel::class, $ch1 = $client->channel());
+        $this->assertInstanceOf(Channel::class, $ch2 = $client->channel());
         $this->assertNotEquals($ch1->getChannelId(), $ch2->getChannelId());
-        $this->assertInstanceOf("Bunny\\Channel", $ch3 = $client->channel());
+        $this->assertInstanceOf(Channel::class, $ch3 = $client->channel());
         $this->assertNotEquals($ch1->getChannelId(), $ch3->getChannelId());
         $this->assertNotEquals($ch2->getChannelId(), $ch3->getChannelId());
         $client->disconnect();
@@ -105,7 +112,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $message1 = $channel->get("get_test", true);
         $this->assertNotNull($message1);
-        $this->assertInstanceOf("Bunny\\Message", $message1);
+        $this->assertInstanceOf(Message::class, $message1);
         $this->assertEquals($message1->exchange, "");
         $this->assertEquals($message1->content, ".");
 
@@ -121,7 +128,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $channel  = $client->channel();
             $message3 = $channel->get("get_test");
             $this->assertNotNull($message3);
-            $this->assertInstanceOf("Bunny\\Message", $message3);
+            $this->assertInstanceOf(Message::class, $message3);
             $this->assertEquals($message3->exchange, "");
             $this->assertEquals($message3->content, "..");
 
@@ -157,7 +164,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client->run(1);
 
         $this->assertNotNull($returnedMessage);
-        $this->assertInstanceOf("Bunny\\Message", $returnedMessage);
+        $this->assertInstanceOf(Message::class, $returnedMessage);
         $this->assertEquals("xxx", $returnedMessage->content);
         $this->assertEquals("", $returnedMessage->exchange);
         $this->assertEquals("404", $returnedMessage->routingKey);
@@ -188,7 +195,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testTxSelectCannotBeCalledMultipleTimes()
     {
-        $this->setExpectedException("Bunny\\Exception\\ChannelException");
+        $this->expectException(ChannelException::class);
 
         $client = new Client();
         $client->connect();

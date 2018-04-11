@@ -1,7 +1,10 @@
 <?php
 namespace Bunny\Protocol;
 
-class BufferTest extends \PHPUnit_Framework_TestCase
+use Bunny\Exception\BufferUnderflowException;
+use PHPUnit\Framework\TestCase;
+
+class BufferTest extends TestCase
 {
 
     // basic functions
@@ -78,7 +81,7 @@ class BufferTest extends \PHPUnit_Framework_TestCase
 
     public function testReadThrows()
     {
-        $this->setExpectedException("Bunny\\Exception\\BufferUnderflowException");
+        $this->expectException(BufferUnderflowException::class);
         $buf = new Buffer();
         $buf->read(1);
     }
@@ -99,7 +102,7 @@ class BufferTest extends \PHPUnit_Framework_TestCase
 
     public function testConsumeThrows()
     {
-        $this->setExpectedException("Bunny\\Exception\\BufferUnderflowException");
+        $this->expectException(BufferUnderflowException::class);
         $buf = new Buffer();
         $buf->consume(1);
     }
@@ -123,7 +126,7 @@ class BufferTest extends \PHPUnit_Framework_TestCase
 
     public function testDiscardThrows()
     {
-        $this->setExpectedException("Bunny\\Exception\\BufferUnderflowException");
+        $this->expectException(BufferUnderflowException::class);
         $buf = new Buffer();
         $buf->discard(1);
     }
@@ -151,7 +154,7 @@ class BufferTest extends \PHPUnit_Framework_TestCase
 
     public function testSliceThrows()
     {
-        $this->setExpectedException("Bunny\\Exception\\BufferUnderflowException");
+        $this->expectException(BufferUnderflowException::class);
         $buf = new Buffer();
         $buf->slice(1);
     }
@@ -175,7 +178,7 @@ class BufferTest extends \PHPUnit_Framework_TestCase
 
     public function testConsumeSliceThrows()
     {
-        $this->setExpectedException("Bunny\\Exception\\BufferUnderflowException");
+        $this->expectException(BufferUnderflowException::class);
         $buf = new Buffer();
         $buf->consumeSlice(1);
     }
